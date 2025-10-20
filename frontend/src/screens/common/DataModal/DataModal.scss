@@ -1,0 +1,310 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(102, 126, 234, 0.3);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  width: 90vw;
+  height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px 16px 0 0;
+
+  h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: white;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .json-toggle-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    &.active {
+      background: white;
+      color: #667eea;
+    }
+  }
+
+  .close-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: white;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: rotate(90deg);
+    }
+  }
+}
+
+.modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+
+  &.with-navigator {
+    display: flex;
+    gap: 24px;
+    padding: 0;
+  }
+
+  .modal-navigator {
+    width: 280px;
+    border-right: 1px solid #e8ecff;
+    background: #f8f9ff;
+    display: flex;
+    flex-direction: column;
+
+    .navigator-title {
+      padding: 20px;
+      font-weight: 600;
+      color: #667eea;
+      font-size: 15px;
+      border-bottom: 2px solid #e8ecff;
+    }
+
+    .navigator-list {
+      list-style: none;
+      margin: 0;
+      padding: 12px;
+      overflow-y: auto;
+      flex: 1;
+
+      li {
+        padding: 12px 16px;
+        margin-bottom: 8px;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        font-size: 14px;
+        color: #666;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        &:hover {
+          background: white;
+          color: #667eea;
+          box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        }
+
+        &.active {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          font-weight: 500;
+          box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+      }
+    }
+  }
+
+  .modal-detail {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+  }
+
+  .json-object {
+    .json-field {
+      margin: 8px 0;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+
+      .json-key {
+        color: #667eea;
+        font-weight: 600;
+        font-size: 14px;
+        min-width: 120px;
+        flex-shrink: 0;
+      }
+
+      .json-value {
+        color: #333;
+        font-size: 14px;
+        line-height: 1.6;
+        word-break: break-word;
+
+        &.empty {
+          color: #999;
+          font-style: italic;
+        }
+      }
+    }
+  }
+
+  .json-table-wrapper {
+    margin: 8px 0;
+    overflow-x: auto;
+
+    .json-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #e8ecff;
+
+      thead {
+        background: #f8f9ff;
+
+        th {
+          padding: 12px 16px;
+          text-align: left;
+          font-weight: 600;
+          color: #667eea;
+          font-size: 13px;
+          border-bottom: 2px solid #e8ecff;
+        }
+      }
+
+      tbody {
+        tr {
+          border-bottom: 1px solid #f0f0f0;
+          transition: all 0.2s ease;
+
+          &:hover {
+            background-color: #f8f9ff;
+          }
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+          td {
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #333;
+            border: none;
+          }
+        }
+      }
+    }
+  }
+
+  .json-array {
+    .json-array-item {
+      margin: 8px 0;
+      padding: 8px;
+      background-color: #f8f9ff;
+      border-radius: 6px;
+      border-left: 3px solid #667eea;
+
+      .json-index {
+        color: #764ba2;
+        font-weight: 600;
+        margin-right: 8px;
+        font-size: 13px;
+      }
+    }
+  }
+
+  .json-primitive {
+    color: #333;
+    font-size: 14px;
+
+    &.multiline {
+      white-space: pre-wrap;
+      display: block;
+      line-height: 1.6;
+    }
+  }
+
+  pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f8f9ff;
+    padding: 16px;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+  }
+
+  .raw-json {
+    margin: 0;
+    padding: 24px;
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    border-radius: 8px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-x: auto;
+    white-space: pre;
+    border: 1px solid #333;
+  }
+}
