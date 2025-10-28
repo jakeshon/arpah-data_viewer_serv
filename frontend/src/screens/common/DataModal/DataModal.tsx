@@ -284,6 +284,19 @@ const DataModal: React.FC<DataModalProps> = ({ isOpen, onClose, title, content }
     });
   }
 
+  // 특정 컬럼명에 대해 테이블로 직접 표시할지 결정
+  const shouldShowDirectTable = (columnTitle: string): boolean => {
+    const directTableColumns = [
+      '식이처방',
+      '욕창상처관찰기록',
+      '항생제투약이력',
+      '미생물검사결과',
+      '진단검사결과',
+      '영상검사결과'
+    ];
+    return directTableColumns.includes(columnTitle);
+  };
+
   // 배열의 각 항목에 대한 라벨 생성
   const getItemLabel = (item: any, index: number): string => {
     if (typeof item === 'object' && item !== null) {
@@ -320,12 +333,18 @@ const DataModal: React.FC<DataModalProps> = ({ isOpen, onClose, title, content }
             <button className="close-button" onClick={onClose}>×</button>
           </div>
         </div>
-        <div className={`modal-body ${isObjectArray && !showRawJSON ? 'with-navigator' : ''}`}>
+        <div className={`modal-body ${isObjectArray && !showRawJSON && !shouldShowDirectTable(title) ? 'with-navigator' : ''}`}>
           {showRawJSON ? (
             <pre className="raw-json">
               {JSON.stringify(parsedContent, null, 2)}
             </pre>
+          ) : isObjectArray && shouldShowDirectTable(title) ? (
+            // 직접 테이블로 표시 (네비게이터 없음)
+            <div className="modal-detail-full">
+              {renderJSON(sortedContent)}
+            </div>
           ) : isObjectArray ? (
+            // 기존 네비게이터 방식
             <>
               <div className="modal-navigator">
                 <div className="navigator-title">목록 ({sortedContent.length})</div>
