@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-fvkvgl6s8#ibx5#yi4jrdy$46^4f+1g7177ag0!sql6@7wrh*&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']  # 개발 환경: 모든 호스트 허용 (운영 환경에서는 특정 도메인/IP만 지정)
 
 
 # Application definition
@@ -126,10 +126,13 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS settings
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:9006",
-    "http://127.0.0.1:9006",
-]
+# 개발 환경: 모든 origin 허용 (운영 환경에서는 특정 도메인만 지정)
+CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:9006",
+#     "http://127.0.0.1:9006",
+#     "http://155.230.214.81:9006",
+# ]
 
 # Data file path
 DATA_FILE_PATH = BASE_DIR.parent / 'data' / 'infos_merge.json'

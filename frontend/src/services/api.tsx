@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { DataResponse, MetadataResponse } from '../types';
 
-const API_BASE_URL = 'http://localhost:19006/api';
+// 환경변수로 백엔드 서버 주소 지정 가능 (기본값: localhost)
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:19006/api';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
