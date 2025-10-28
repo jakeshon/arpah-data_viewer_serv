@@ -132,4 +132,4 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 # Data file path
-DATA_FILE_PATH = BASE_DIR.parent / 'data' / 'infos.xlsx'
+DATA_FILE_PATH = BASE_DIR.parent / 'data' / 'infos_llm_results.json'

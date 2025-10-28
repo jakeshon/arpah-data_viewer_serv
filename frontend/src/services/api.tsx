@@ -16,9 +16,27 @@ export const dataService = {
     return response.data;
   },
 
-  getData: async (page: number = 1, pageSize: number = 50): Promise<DataResponse> => {
+  getData: async (
+    page: number = 1,
+    pageSize: number = 50,
+    patientNo?: string,
+    interventionType?: string,
+    antibiotic?: string
+  ): Promise<DataResponse> => {
+    const params: any = { page, page_size: pageSize };
+
+    if (patientNo) {
+      params.patient_no = patientNo;
+    }
+    if (interventionType) {
+      params.intervention_type = interventionType;
+    }
+    if (antibiotic) {
+      params.antibiotic = antibiotic;
+    }
+
     const response = await apiClient.get<DataResponse>('/data/', {
-      params: { page, page_size: pageSize },
+      params,
     });
     return response.data;
   },

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { dataService } from '../../services/api';
 import { DataItem, MetadataItem } from '../../types';
 import DataTable from './components/DataTable';
+import SearchBar from './components/SearchBar';
 import Loading from '../common/Loading/Loading';
 import ErrorMessage from '../common/ErrorMessage/ErrorMessage';
 import './DataViewerScreen.scss';
@@ -13,6 +14,9 @@ const DataViewerScreen: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [patientNo, setPatientNo] = useState('');
+  const [interventionType, setInterventionType] = useState('');
+  const [antibiotic, setAntibiotic] = useState('');
   const pageSize = 50;
 
   useEffect(() => {
@@ -21,7 +25,7 @@ const DataViewerScreen: React.FC = () => {
 
   useEffect(() => {
     loadData(currentPage);
-  }, [currentPage]);
+  }, [currentPage, patientNo, interventionType, antibiotic]);
 
   const loadMetadata = async () => {
     try {
@@ -38,7 +42,7 @@ const DataViewerScreen: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await dataService.getData(page, pageSize);
+      const response = await dataService.getData(page, pageSize, patientNo, interventionType, antibiotic);
 
       if (response.success) {
         setData(response.data);
@@ -56,6 +60,13 @@ const DataViewerScreen: React.FC = () => {
     setCurrentPage(page);
   };
 
+  const handleSearch = (searchPatientNo: string, searchInterventionType: string, searchAntibiotic: string) => {
+    setPatientNo(searchPatientNo);
+    setInterventionType(searchInterventionType);
+    setAntibiotic(searchAntibiotic);
+    setCurrentPage(1); // 검색 시 첫 페이지로 이동
+  };
+
   if (loading) {
     return <Loading />;
   }
@@ -66,6 +77,12 @@ const DataViewerScreen: React.FC = () => {
 
   return (
     <div className="data-viewer-screen">
+      <SearchBar
+        onSearch={handleSearch}
+        currentPatientNo={patientNo}
+        currentInterventionType={interventionType}
+        currentAntibiotic={antibiotic}
+      />
       <DataTable
         data={data}
         metadata={metadata}

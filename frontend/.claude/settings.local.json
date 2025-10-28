@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/shon/ws/ws_proj/aim/arpah/data_compose_custom/**)",
+      "Read(//Users/shon/ws/ws_proj/aim/arpah/data_viewer_serv/backend/dataviewer/**)",
+      "Read(//Users/shon/ws/ws_proj/aim/arpah/data_viewer_serv/backend/config/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

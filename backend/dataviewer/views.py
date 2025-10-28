@@ -22,12 +22,21 @@ def get_metadata(request):
 
 @api_view(['GET'])
 def get_data(request):
-    """데이터 조회 API (페이징)"""
+    """데이터 조회 API (페이징 및 검색)"""
     try:
         page = int(request.GET.get('page', 1))
         page_size = int(request.GET.get('page_size', 50))
+        patient_no = request.GET.get('patient_no', '').strip()
+        intervention_type = request.GET.get('intervention_type', '').strip()
+        antibiotic = request.GET.get('antibiotic', '').strip()
 
-        result = ExcelDataService.get_data(page=page, page_size=page_size)
+        result = ExcelDataService.get_data(
+            page=page,
+            page_size=page_size,
+            patient_no=patient_no if patient_no else None,
+            intervention_type=intervention_type if intervention_type else None,
+            antibiotic=antibiotic if antibiotic else None
+        )
         return Response({
             'success': True,
             **result

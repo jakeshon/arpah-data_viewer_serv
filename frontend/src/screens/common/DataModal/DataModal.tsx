@@ -34,6 +34,111 @@ const DataModal: React.FC<DataModalProps> = ({ isOpen, onClose, title, content }
     return data;
   };
 
+  const renderTPRTable = (tprData: any): React.ReactNode => {
+    // Collect all unique timestamps from all sections
+    const timestampSet = new Set<string>();
+    const sections: { [category: string]: { [key: string]: Array<{ 기록시간: string; 값: string }> } } = {};
+
+    // Categories to display hierarchically
+    const categories = ['V/S', '중환자관리', '호흡기계', 'I/O', '삽관', '신경계', 'Ventilator'];
+
+    // Process each category
+    categories.forEach(category => {
+      const categoryData = tprData[category];
+      if (categoryData && typeof categoryData === 'object') {
+        sections[category] = {};
+
+        Object.entries(categoryData).forEach(([key, value]) => {
+          if (Array.isArray(value)) {
+            sections[category][key] = value;
+            value.forEach((item: any) => {
+              if (item['기록시간']) {
+                timestampSet.add(item['기록시간']);
+              }
+            });
+          }
+        });
+      }
+    });
+
+    // Sort timestamps
+    const timestamps = Array.from(timestampSet).sort();
+
+    if (timestamps.length === 0) {
+      return <div className="json-value empty">시계열 데이터 없음</div>;
+    }
+
+    // Format timestamp for display - separate date and time
+    const formatDate = (ts: string): string => {
+      if (ts.length === 14) {
+        return `${ts.slice(4, 6)}/${ts.slice(6, 8)}`;
+      }
+      return ts;
+    };
+
+    const formatTime = (ts: string): string => {
+      if (ts.length === 14) {
+        return `${ts.slice(8, 10)}:${ts.slice(10, 12)}`;
+      }
+      return ts;
+    };
+
+    // Category labels
+    const categoryLabels: { [key: string]: string } = {
+      'V/S': 'Vital Signs',
+      '중환자관리': '중환자관리',
+      '호흡기계': '호흡기계',
+      'I/O': 'I/O',
+      '삽관': '삽관',
+      '신경계': '신경계',
+      'Ventilator': 'Ventilator'
+    };
+
+    return (
+      <div className="tpr-table-wrapper">
+        <table className="tpr-table">
+          <thead>
+            <tr className="date-row">
+              <th rowSpan={2}>항목</th>
+              {timestamps.map(ts => (
+                <th key={ts}>{formatDate(ts)}</th>
+              ))}
+            </tr>
+            <tr className="time-row">
+              {timestamps.map(ts => (
+                <th key={ts}>{formatTime(ts)}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {Object.entries(sections).map(([category, items]) => (
+              <React.Fragment key={category}>
+                <tr className="category-row">
+                  <td className="category-label" colSpan={timestamps.length + 1}>
+                    {categoryLabels[category] || category}
+                  </td>
+                </tr>
+                {Object.entries(items).map(([itemKey, records]) => (
+                  <tr key={`${category}-${itemKey}`} className="item-row">
+                    <td className="item-label">{itemKey}</td>
+                    {timestamps.map(ts => {
+                      const record = records.find(r => r['기록시간'] === ts);
+                      return (
+                        <td key={ts} className="vital-value">
+                          {record ? record['값'] : '-'}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+
   const renderJSON = (data: any, level: number = 0): React.ReactNode => {
     const parsedData = parseJSON(data);
 
@@ -42,6 +147,30 @@ const DataModal: React.FC<DataModalProps> = ({ isOpen, onClose, title, content }
     }
 
     if (typeof parsedData === 'object' && !Array.isArray(parsedData)) {
+      // Check if this is 간호TPR data with V/S or other vital categories
+      if (parsedData['V/S'] && typeof parsedData['V/S'] === 'object') {
+        return (
+          <div className="json-object">
+            <div className="json-field">
+              <span className="json-key">신장:</span>
+              <span className="json-value">{parsedData['신장'] || '-'}</span>
+            </div>
+            <div className="json-field">
+              <span className="json-key">체중:</span>
+              <span className="json-value">{parsedData['체중'] || '-'}</span>
+            </div>
+            <div className="json-field">
+              <span className="json-key">BSA:</span>
+              <span className="json-value">{parsedData['BSA'] || '-'}</span>
+            </div>
+            <div className="json-field vital-signs">
+              <span className="json-key">간호 기록:</span>
+              {renderTPRTable(parsedData)}
+            </div>
+          </div>
+        );
+      }
+
       return (
         <div className="json-object" style={{ marginLeft: level > 0 ? '20px' : '0' }}>
           {Object.entries(parsedData).map(([key, value]) => (
