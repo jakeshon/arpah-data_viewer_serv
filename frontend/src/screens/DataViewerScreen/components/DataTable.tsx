@@ -151,6 +151,7 @@ const DataTable: React.FC<DataTableProps> = ({
         <table className="data-table">
           <thead>
             <tr>
+              <th className="row-number-header">순번</th>
               {columns.map((col, index) => (
                 <th key={index}>{col.name}</th>
               ))}
@@ -159,6 +160,9 @@ const DataTable: React.FC<DataTableProps> = ({
           <tbody>
             {data.map((row, rowIndex) => (
               <tr key={rowIndex}>
+                <td className="row-number">
+                  {(currentPage - 1) * 50 + rowIndex + 1}
+                </td>
                 {columns.map((col, colIndex) => {
                   // 중재활동분류 필드 처리
                   if (col.id === '중재활동분류') {

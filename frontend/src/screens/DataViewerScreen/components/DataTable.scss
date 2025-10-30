@@ -1,11 +1,17 @@
 .data-table-container {
   width: 100%;
-  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
 
   .table-wrapper {
+    flex: 1;
     overflow-x: auto;
+    overflow-y: auto;
     border-radius: 12px;
-    margin-bottom: 24px;
+    margin: 24px;
+    margin-bottom: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   }
 
@@ -28,6 +34,15 @@
         border: none;
         font-size: 14px;
         letter-spacing: 0.5px;
+
+        &.row-number-header {
+          width: 80px;
+          text-align: center;
+          background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+          position: sticky;
+          left: 0;
+          z-index: 10;
+        }
       }
     }
 
@@ -44,6 +59,19 @@
         td {
           padding: 12px 20px;
           border-bottom: 1px solid #f0f0f0;
+
+          &.row-number {
+            width: 80px;
+            text-align: center;
+            font-weight: 600;
+            color: #764ba2;
+            background: #fafbff;
+            position: sticky;
+            left: 0;
+            z-index: 5;
+            border-right: 2px solid #e8ecff;
+            font-size: 14px;
+          }
 
           .patient-id {
             font-weight: 600;
@@ -127,6 +155,10 @@
     justify-content: center;
     align-items: center;
     gap: 20px;
+    padding: 16px 24px;
+    background: white;
+    border-top: 2px solid #e8ecff;
+    flex-shrink: 0;
 
     button {
       padding: 10px 24px;

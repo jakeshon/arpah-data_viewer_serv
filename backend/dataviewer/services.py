@@ -90,7 +90,7 @@ class ExcelDataService:
         return metadata
 
     @staticmethod
-    def get_data(page: int = 1, page_size: int = 50, patient_no: str = None, intervention_type: str = None, antibiotic: str = None) -> Dict[str, Any]:
+    def get_data(page: int = 1, page_size: int = 50, patient_no: str = None, intervention_type: str = None, antibiotic: str = None, consultation: str = None) -> Dict[str, Any]:
         """Get paginated and filtered data from JSON"""
         data = ExcelDataService._load_json_data()
         all_data = data.get('data', [])
@@ -133,6 +133,13 @@ class ExcelDataService:
                 if item.get('항생제투약이력') and ExcelDataService._search_antibiotic(item.get('항생제투약이력'), antibiotic)
             ]
 
+        if consultation:
+            # Search consultation records (case insensitive)
+            filtered_data = [
+                item for item in filtered_data
+                if item.get('협진기록') and ExcelDataService._search_consultation(item.get('협진기록'), consultation)
+            ]
+
         # Pagination
         total = len(filtered_data)
         start_idx = (page - 1) * page_size
@@ -161,6 +168,42 @@ class ExcelDataService:
                 for record in data['항생제투약']:
                     if '처방명' in record and search_term_lower in str(record['처방명']).lower():
                         return True
+            return False
+        except:
+            return False
+
+    @staticmethod
+    def _search_consultation(consultation_data: Any, search_term: str) -> bool:
+        """Search consultation records for text (case insensitive)"""
+        try:
+            if isinstance(consultation_data, str):
+                data = json.loads(consultation_data)
+            else:
+                data = consultation_data
+
+            search_term_lower = search_term.lower()
+
+            # If it's a list of consultation records
+            if isinstance(data, list):
+                for record in data:
+                    if isinstance(record, dict):
+                        # Search in all text fields
+                        for key, value in record.items():
+                            if isinstance(value, str) and search_term_lower in value.lower():
+                                return True
+            # If it's a single dictionary
+            elif isinstance(data, dict):
+                for key, value in data.items():
+                    if isinstance(value, str) and search_term_lower in value.lower():
+                        return True
+                    # Handle nested lists
+                    elif isinstance(value, list):
+                        for item in value:
+                            if isinstance(item, dict):
+                                for k, v in item.items():
+                                    if isinstance(v, str) and search_term_lower in v.lower():
+                                        return True
+
             return False
         except:
             return False

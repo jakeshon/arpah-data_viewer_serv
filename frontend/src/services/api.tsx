@@ -22,7 +22,8 @@ export const dataService = {
     pageSize: number = 50,
     patientNo?: string,
     interventionType?: string,
-    antibiotic?: string
+    antibiotic?: string,
+    consultation?: string
   ): Promise<DataResponse> => {
     const params: any = { page, page_size: pageSize };
 
@@ -34,6 +35,9 @@ export const dataService = {
     }
     if (antibiotic) {
       params.antibiotic = antibiotic;
+    }
+    if (consultation) {
+      params.consultation = consultation;
     }
 
     const response = await apiClient.get<DataResponse>('/data/', {

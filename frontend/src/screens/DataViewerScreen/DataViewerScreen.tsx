@@ -17,6 +17,7 @@ const DataViewerScreen: React.FC = () => {
   const [patientNo, setPatientNo] = useState('');
   const [interventionType, setInterventionType] = useState('');
   const [antibiotic, setAntibiotic] = useState('');
+  const [consultation, setConsultation] = useState('');
   const pageSize = 50;
 
   useEffect(() => {
@@ -25,7 +26,7 @@ const DataViewerScreen: React.FC = () => {
 
   useEffect(() => {
     loadData(currentPage);
-  }, [currentPage, patientNo, interventionType, antibiotic]);
+  }, [currentPage, patientNo, interventionType, antibiotic, consultation]);
 
   const loadMetadata = async () => {
     try {
@@ -42,7 +43,7 @@ const DataViewerScreen: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await dataService.getData(page, pageSize, patientNo, interventionType, antibiotic);
+      const response = await dataService.getData(page, pageSize, patientNo, interventionType, antibiotic, consultation);
 
       if (response.success) {
         setData(response.data);
@@ -60,10 +61,11 @@ const DataViewerScreen: React.FC = () => {
     setCurrentPage(page);
   };
 
-  const handleSearch = (searchPatientNo: string, searchInterventionType: string, searchAntibiotic: string) => {
+  const handleSearch = (searchPatientNo: string, searchInterventionType: string, searchAntibiotic: string, searchConsultation: string) => {
     setPatientNo(searchPatientNo);
     setInterventionType(searchInterventionType);
     setAntibiotic(searchAntibiotic);
+    setConsultation(searchConsultation);
     setCurrentPage(1); // 검색 시 첫 페이지로 이동
   };
 
@@ -82,6 +84,7 @@ const DataViewerScreen: React.FC = () => {
         currentPatientNo={patientNo}
         currentInterventionType={interventionType}
         currentAntibiotic={antibiotic}
+        currentConsultation={consultation}
       />
       <DataTable
         data={data}

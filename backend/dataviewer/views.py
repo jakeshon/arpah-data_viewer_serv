@@ -29,13 +29,15 @@ def get_data(request):
         patient_no = request.GET.get('patient_no', '').strip()
         intervention_type = request.GET.get('intervention_type', '').strip()
         antibiotic = request.GET.get('antibiotic', '').strip()
+        consultation = request.GET.get('consultation', '').strip()
 
         result = ExcelDataService.get_data(
             page=page,
             page_size=page_size,
             patient_no=patient_no if patient_no else None,
             intervention_type=intervention_type if intervention_type else None,
-            antibiotic=antibiotic if antibiotic else None
+            antibiotic=antibiotic if antibiotic else None,
+            consultation=consultation if consultation else None
         )
         return Response({
             'success': True,
