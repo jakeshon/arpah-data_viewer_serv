@@ -10,7 +10,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ activeMenu, onMenuChange }) => {
   const menuItems = [
     { id: 'dataviewer', label: '데이터 뷰어' },
-    // 추가 메뉴 항목을 여기에 추가할 수 있습니다
+    { id: 'deidentified', label: '비식별화' },
   ];
 
   return (

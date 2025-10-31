@@ -8,36 +8,55 @@ class ExcelDataService:
     """JSON data service (previously Excel-based, now JSON-based)"""
 
     _cached_data = None
+    _cached_data_deidentified = None
 
     @staticmethod
-    def _load_json_data() -> Dict[str, Any]:
+    def _load_json_data(deidentified: bool = False) -> Dict[str, Any]:
         """Load and cache JSON data"""
-        if ExcelDataService._cached_data is None:
-            json_file_path = str(settings.DATA_FILE_PATH)
+        if deidentified:
+            if ExcelDataService._cached_data_deidentified is None:
+                json_file_path = str(settings.DATA_FILE_PATH_DEIDENTIFIED)
 
-            if not os.path.exists(json_file_path):
-                raise FileNotFoundError(f"JSON file not found: {json_file_path}")
+                if not os.path.exists(json_file_path):
+                    raise FileNotFoundError(f"JSON file not found: {json_file_path}")
 
-            with open(json_file_path, 'r', encoding='utf-8') as f:
-                ExcelDataService._cached_data = json.load(f)
+                with open(json_file_path, 'r', encoding='utf-8') as f:
+                    ExcelDataService._cached_data_deidentified = json.load(f)
 
-        return ExcelDataService._cached_data
+            return ExcelDataService._cached_data_deidentified
+        else:
+            if ExcelDataService._cached_data is None:
+                json_file_path = str(settings.DATA_FILE_PATH)
+
+                if not os.path.exists(json_file_path):
+                    raise FileNotFoundError(f"JSON file not found: {json_file_path}")
+
+                with open(json_file_path, 'r', encoding='utf-8') as f:
+                    ExcelDataService._cached_data = json.load(f)
+
+            return ExcelDataService._cached_data
 
     @staticmethod
-    def _save_json_data(data: Dict[str, Any]):
+    def _save_json_data(data: Dict[str, Any], deidentified: bool = False):
         """Save data to JSON file and update cache"""
-        json_file_path = str(settings.DATA_FILE_PATH)
+        if deidentified:
+            json_file_path = str(settings.DATA_FILE_PATH_DEIDENTIFIED)
+        else:
+            json_file_path = str(settings.DATA_FILE_PATH)
 
         with open(json_file_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
         # Update cache
-        ExcelDataService._cached_data = data
+        if deidentified:
+            ExcelDataService._cached_data_deidentified = data
+        else:
+            ExcelDataService._cached_data = data
 
     @staticmethod
-    def get_metadata() -> List[Dict[str, Any]]:
+    def get_metadata(deidentified: bool = False) -> List[Dict[str, Any]]:
         """Get column metadata from JSON columns"""
-        data = ExcelDataService._load_json_data()
+        data = ExcelDataService._load_json_data(deidentified)
         columns = data.get('columns', [])
 
         # Generate metadata from column names
@@ -90,9 +109,9 @@ class ExcelDataService:
         return metadata
 
     @staticmethod
-    def get_data(page: int = 1, page_size: int = 50, patient_no: str = None, intervention_type: str = None, antibiotic: str = None, consultation: str = None) -> Dict[str, Any]:
+    def get_data(page: int = 1, page_size: int = 50, patient_no: str = None, intervention_type: str = None, antibiotic: str = None, consultation: str = None, deidentified: bool = False) -> Dict[str, Any]:
         """Get paginated and filtered data from JSON"""
-        data = ExcelDataService._load_json_data()
+        data = ExcelDataService._load_json_data(deidentified)
         all_data = data.get('data', [])
 
         # Extract 진료과 and 병동 from 기본정보 and add to each record
@@ -209,11 +228,11 @@ class ExcelDataService:
             return False
 
     @staticmethod
-    def update_data(row_index: int, column_name: str, value: Any) -> bool:
+    def update_data(row_index: int, column_name: str, value: Any, deidentified: bool = False) -> bool:
         """Update specific cell data in JSON"""
         try:
             # Load current data
-            json_data = ExcelDataService._load_json_data()
+            json_data = ExcelDataService._load_json_data(deidentified)
             all_data = json_data.get('data', [])
 
             # Check row index validity
@@ -239,10 +258,52 @@ class ExcelDataService:
             all_data[row_index][column_name] = cell_value
 
             # Save to file
-            ExcelDataService._save_json_data(json_data)
+            ExcelDataService._save_json_data(json_data, deidentified)
 
             return True
 
         except Exception as e:
-            print(f"Data update error: {str(e)}")
+            raise e
+
+    @staticmethod
+    def update_data_by_patient(patient_no: str, intervention_date: str, column_name: str, value: Any, deidentified: bool = False) -> bool:
+        """Update specific cell data by patient number and intervention date"""
+        try:
+            # Load current data
+            json_data = ExcelDataService._load_json_data(deidentified)
+            all_data = json_data.get('data', [])
+
+            # Find row by patient_no AND intervention_date
+            row_index = -1
+            for idx, row in enumerate(all_data):
+                if str(row.get('환자번호')) == str(patient_no) and str(row.get('중재일자')) == str(intervention_date):
+                    row_index = idx
+                    break
+
+            if row_index == -1:
+                raise ValueError(f"Patient not found: 환자번호={patient_no}, 중재일자={intervention_date}")
+
+            # Check column name validity
+            columns = json_data.get('columns', [])
+            if column_name not in columns:
+                raise ValueError(f"Column '{column_name}' not found")
+
+            # Update value (중재활동분류 stored as comma-separated string)
+            if column_name == '중재활동분류':
+                if isinstance(value, list):
+                    cell_value = ', '.join(map(str, value)) if value else ''
+                else:
+                    cell_value = value
+            else:
+                cell_value = value
+
+            # Update data
+            all_data[row_index][column_name] = cell_value
+
+            # Save to file
+            ExcelDataService._save_json_data(json_data, deidentified)
+
+            return True
+
+        except Exception as e:
             raise e

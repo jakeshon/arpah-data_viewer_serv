@@ -136,3 +136,4 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 # Data file path
 DATA_FILE_PATH = BASE_DIR.parent / 'data' / 'infos_merge.json'
+DATA_FILE_PATH_DEIDENTIFIED = BASE_DIR.parent / 'data' / 'infos_deidentified_final.json'

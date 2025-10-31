@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Header from '../common/Header/Header';
 import DataViewerScreen from '../DataViewerScreen/DataViewerScreen';
+import DeidentifiedScreen from '../DeidentifiedScreen/DeidentifiedScreen';
 import './MainLayout.scss';
 
 const MainLayout: React.FC = () => {
@@ -14,6 +15,8 @@ const MainLayout: React.FC = () => {
     switch (activeMenu) {
       case 'dataviewer':
         return <DataViewerScreen />;
+      case 'deidentified':
+        return <DeidentifiedScreen />;
       default:
         return <DataViewerScreen />;
     }
