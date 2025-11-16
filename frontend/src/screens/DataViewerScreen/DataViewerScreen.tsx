@@ -14,6 +14,7 @@ const DataViewerScreen: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [institution, setInstitution] = useState('');
   const [patientNo, setPatientNo] = useState('');
   const [interventionType, setInterventionType] = useState('');
   const [antibiotic, setAntibiotic] = useState('');
@@ -26,7 +27,7 @@ const DataViewerScreen: React.FC = () => {
 
   useEffect(() => {
     loadData(currentPage);
-  }, [currentPage, patientNo, interventionType, antibiotic, consultation]);
+  }, [currentPage, institution, patientNo, interventionType, antibiotic, consultation]);
 
   const loadMetadata = async () => {
     try {
@@ -43,7 +44,7 @@ const DataViewerScreen: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await dataService.getData(page, pageSize, patientNo, interventionType, antibiotic, consultation);
+      const response = await dataService.getData(page, pageSize, institution, patientNo, interventionType, antibiotic, consultation);
 
       if (response.success) {
         setData(response.data);
@@ -61,7 +62,8 @@ const DataViewerScreen: React.FC = () => {
     setCurrentPage(page);
   };
 
-  const handleSearch = (searchPatientNo: string, searchInterventionType: string, searchAntibiotic: string, searchConsultation: string) => {
+  const handleSearch = (searchInstitution: string, searchPatientNo: string, searchInterventionType: string, searchAntibiotic: string, searchConsultation: string) => {
+    setInstitution(searchInstitution);
     setPatientNo(searchPatientNo);
     setInterventionType(searchInterventionType);
     setAntibiotic(searchAntibiotic);
@@ -81,6 +83,7 @@ const DataViewerScreen: React.FC = () => {
     <div className="data-viewer-screen">
       <SearchBar
         onSearch={handleSearch}
+        currentInstitution={institution}
         currentPatientNo={patientNo}
         currentInterventionType={interventionType}
         currentAntibiotic={antibiotic}

@@ -207,7 +207,7 @@ const DataTable: React.FC<DataTableProps> = ({
                   // 일반 필드 처리
                   return (
                     <td key={colIndex}>
-                      {col.id === '환자번호' || col.id === '환자순번' || col.id === '중재일자' || col.id === '입원일자' || col.id === '진료과' || col.id === '병동' || col.id.startsWith('중재활동분류_') ? (
+                      {col.id === '기관' || col.id === '환자번호' || col.id === '환자순번' || col.id === '중재일자' || col.id === '입원일자' || col.id === '진료과' || col.id === '병동' || col.id.startsWith('중재활동분류_') ? (
                         <span className={'patient-id'}>{row[col.id]}</span>
                       ) : hasData(row[col.id]) ? (
                         <button

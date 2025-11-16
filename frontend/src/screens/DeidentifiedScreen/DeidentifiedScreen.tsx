@@ -61,7 +61,8 @@ const DeidentifiedScreen: React.FC = () => {
     setCurrentPage(page);
   };
 
-  const handleSearch = (searchPatientNo: string, searchInterventionType: string, searchAntibiotic: string, searchConsultation: string) => {
+  const handleSearch = (searchInstitution: string, searchPatientNo: string, searchInterventionType: string, searchAntibiotic: string, searchConsultation: string) => {
+    // 비식별화 탭에서는 기관 검색을 사용하지 않음
     setPatientNo(searchPatientNo);
     setInterventionType(searchInterventionType);
     setAntibiotic(searchAntibiotic);
@@ -85,6 +86,7 @@ const DeidentifiedScreen: React.FC = () => {
         currentInterventionType={interventionType}
         currentAntibiotic={antibiotic}
         currentConsultation={consultation}
+        showInstitution={false}
       />
       <DeidentifiedDataTable
         data={data}

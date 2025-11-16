@@ -3,6 +3,7 @@ import { DataItem, MetadataItem } from '../../../types';
 import DataModal from '../../common/DataModal/DataModal';
 import InterventionModal from '../../common/InterventionModal/InterventionModal';
 import DeidentifiedEditModal from './DeidentifiedEditModal/EditModal';
+import EditModal from '../../common/EditModal/EditModal';
 import { dataService } from '../../../services/api';
 import './DeidentifiedDataTable.scss';
 
@@ -33,6 +34,9 @@ const DeidentifiedDataTable: React.FC<DataTableProps> = ({
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [currentEditRow, setCurrentEditRow] = useState<number | null>(null);
   const [editModalTitle, setEditModalTitle] = useState('');
+
+  const [guideModalOpen, setGuideModalOpen] = useState(false);
+  const [currentGuideRow, setCurrentGuideRow] = useState<number | null>(null);
 
   // 메타데이터에서 컬럼 정보 추출 (col_id와 col_name 사용)
   const columns = metadata.length > 0
@@ -116,6 +120,40 @@ const DeidentifiedDataTable: React.FC<DataTableProps> = ({
         onDataRefresh();
       } catch (error) {
         console.error('중재활동분류 저장 실패:', error);
+        alert('저장에 실패했습니다.');
+      }
+    }
+  };
+
+  const handleGuideClick = (rowIndex: number) => {
+    setCurrentGuideRow(rowIndex);
+    setGuideModalOpen(true);
+  };
+
+  const handleGuideSave = async (value: string) => {
+    if (currentGuideRow !== null) {
+      try {
+        const currentRow = data[currentGuideRow];
+        currentRow['중재가이드작성'] = value;
+
+        const patientNo = currentRow['환자번호'];
+        const interventionDate = currentRow['중재일자'];
+
+        if (!patientNo || !interventionDate) {
+          alert('환자 정보가 없어 저장할 수 없습니다.');
+          return;
+        }
+
+        await dataService.updateDataDeidentifiedByPatient(
+          patientNo,
+          interventionDate,
+          '중재가이드작성',
+          value
+        );
+
+        onDataRefresh();
+      } catch (error) {
+        console.error('중재가이드작성 저장 실패:', error);
         alert('저장에 실패했습니다.');
       }
     }
@@ -214,7 +252,7 @@ const DeidentifiedDataTable: React.FC<DataTableProps> = ({
                       <td key={colIndex}>
                         <button
                           className="guide-button"
-                          onClick={() => handleEditClick(rowIndex, col.name)}
+                          onClick={() => handleGuideClick(rowIndex)}
                         >
                           {value ? '보기/수정' : '작성'}
                         </button>
@@ -248,7 +286,7 @@ const DeidentifiedDataTable: React.FC<DataTableProps> = ({
                   // 일반 필드 처리
                   return (
                     <td key={colIndex}>
-                      {col.id === '환자번호' || col.id === '환자순번' || col.id === '중재일자' || col.id === '입원일자' || col.id === '진료과' || col.id === '병동' || col.id.startsWith('중재활동분류_') ? (
+                      {col.id === '기관' || col.id === '환자번호' || col.id === '환자순번' || col.id === '중재일자' || col.id === '입원일자' || col.id === '진료과' || col.id === '병동' || col.id.startsWith('중재활동분류_') ? (
                         <span className={'patient-id'}>{row[col.id]}</span>
                       ) : hasData(row[col.id]) ? (
                         <button
@@ -282,6 +320,18 @@ const DeidentifiedDataTable: React.FC<DataTableProps> = ({
           currentInterventionRow !== null
             ? parseInterventionCategories(data[currentInterventionRow]?.['중재활동분류'])
             : []
+        }
+      />
+
+      <EditModal
+        isOpen={guideModalOpen}
+        onClose={() => setGuideModalOpen(false)}
+        onSave={handleGuideSave}
+        title="중재가이드작성"
+        initialValue={
+          currentGuideRow !== null
+            ? (data[currentGuideRow]?.['중재가이드작성'] || '')
+            : ''
         }
       />
 

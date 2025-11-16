@@ -25,6 +25,7 @@ export const dataService = {
   getData: async (
     page: number = 1,
     pageSize: number = 50,
+    institution?: string,
     patientNo?: string,
     interventionType?: string,
     antibiotic?: string,
@@ -32,6 +33,9 @@ export const dataService = {
   ): Promise<DataResponse> => {
     const params: any = { page, page_size: pageSize };
 
+    if (institution) {
+      params.institution = institution;
+    }
     if (patientNo) {
       params.patient_no = patientNo;
     }
@@ -54,6 +58,7 @@ export const dataService = {
   getDataDeidentified: async (
     page: number = 1,
     pageSize: number = 50,
+    institution?: string,
     patientNo?: string,
     interventionType?: string,
     antibiotic?: string,
@@ -61,6 +66,9 @@ export const dataService = {
   ): Promise<DataResponse> => {
     const params: any = { page, page_size: pageSize };
 
+    if (institution) {
+      params.institution = institution;
+    }
     if (patientNo) {
       params.patient_no = patientNo;
     }

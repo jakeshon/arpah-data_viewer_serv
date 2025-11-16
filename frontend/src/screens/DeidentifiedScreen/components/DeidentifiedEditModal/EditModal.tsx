@@ -13,11 +13,13 @@ const DeidentifiedEditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSa
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedData, setEditedData] = useState<any>(null);
+  const [showRawJSON, setShowRawJSON] = useState(false);
 
   useEffect(() => {
     setSelectedIndex(0);
     setIsEditMode(false);
     setEditedData(null);
+    setShowRawJSON(false);
   }, [initialValue, isOpen]);
 
   if (!isOpen) return null;
@@ -394,6 +396,12 @@ const DeidentifiedEditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSa
           <h2>{title}</h2>
           <div className="header-actions">
             <button
+              className={`json-toggle-button ${showRawJSON ? 'active' : ''}`}
+              onClick={() => setShowRawJSON(!showRawJSON)}
+            >
+              {showRawJSON ? '포맷 보기' : 'JSON 보기'}
+            </button>
+            <button
               className={`mode-toggle-button ${isEditMode ? 'active' : ''}`}
               onClick={handleEditToggle}
             >
@@ -402,8 +410,12 @@ const DeidentifiedEditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSa
             <button className="close-button" onClick={onClose}>×</button>
           </div>
         </div>
-        <div className={`modal-body ${isObjectArray ? 'with-navigator' : ''}`}>
-          {isObjectArray ? (
+        <div className={`modal-body ${isObjectArray && !showRawJSON ? 'with-navigator' : ''}`}>
+          {showRawJSON ? (
+            <pre className="raw-json">
+              {JSON.stringify(parsedContent, null, 2)}
+            </pre>
+          ) : isObjectArray ? (
             <>
               <div className="modal-navigator">
                 <div className="navigator-title">목록 ({sortedContent.length})</div>

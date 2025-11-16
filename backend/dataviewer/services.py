@@ -109,7 +109,7 @@ class ExcelDataService:
         return metadata
 
     @staticmethod
-    def get_data(page: int = 1, page_size: int = 50, patient_no: str = None, intervention_type: str = None, antibiotic: str = None, consultation: str = None, deidentified: bool = False) -> Dict[str, Any]:
+    def get_data(page: int = 1, page_size: int = 50, institution: str = None, patient_no: str = None, intervention_type: str = None, antibiotic: str = None, consultation: str = None, deidentified: bool = False) -> Dict[str, Any]:
         """Get paginated and filtered data from JSON"""
         data = ExcelDataService._load_json_data(deidentified)
         all_data = data.get('data', [])
@@ -133,6 +133,12 @@ class ExcelDataService:
 
         # Apply search filters
         filtered_data = enriched_data
+        if institution:
+            filtered_data = [
+                item for item in filtered_data
+                if item.get('기관') and str(item.get('기관')).strip() == institution
+            ]
+
         if patient_no:
             filtered_data = [
                 item for item in filtered_data

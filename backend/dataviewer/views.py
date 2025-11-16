@@ -26,6 +26,7 @@ def get_data(request):
     try:
         page = int(request.GET.get('page', 1))
         page_size = int(request.GET.get('page_size', 50))
+        institution = request.GET.get('institution', '').strip()
         patient_no = request.GET.get('patient_no', '').strip()
         intervention_type = request.GET.get('intervention_type', '').strip()
         antibiotic = request.GET.get('antibiotic', '').strip()
@@ -34,6 +35,7 @@ def get_data(request):
         result = ExcelDataService.get_data(
             page=page,
             page_size=page_size,
+            institution=institution if institution else None,
             patient_no=patient_no if patient_no else None,
             intervention_type=intervention_type if intervention_type else None,
             antibiotic=antibiotic if antibiotic else None,
@@ -99,6 +101,7 @@ def get_data_deidentified(request):
     try:
         page = int(request.GET.get('page', 1))
         page_size = int(request.GET.get('page_size', 50))
+        institution = request.GET.get('institution', '').strip()
         patient_no = request.GET.get('patient_no', '').strip()
         intervention_type = request.GET.get('intervention_type', '').strip()
         antibiotic = request.GET.get('antibiotic', '').strip()
@@ -107,6 +110,7 @@ def get_data_deidentified(request):
         result = ExcelDataService.get_data(
             page=page,
             page_size=page_size,
+            institution=institution if institution else None,
             patient_no=patient_no if patient_no else None,
             intervention_type=intervention_type if intervention_type else None,
             antibiotic=antibiotic if antibiotic else None,
